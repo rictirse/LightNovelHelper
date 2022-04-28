@@ -13,6 +13,16 @@ namespace LightNovelHelper
             var path = Directory.GetCurrentDirectory();
             var di = new DirectoryInfo(path);
             var taskList = new List<Task>();
+            var garbageList = new List<string>
+            {
+                "code.min1ab2.js",
+                "commondf33.js",
+                "GB_BIG5.js",
+                "GB_BIG51534.js",
+                "GB_BIG58135.js",
+                "json2.js",
+                "zation8e03.js",
+            };
 
             foreach (var dri in di.GetDirectories())
             {
@@ -24,7 +34,7 @@ namespace LightNovelHelper
                 taskList.Add(Task.Run(async () => await ReadHtml(fi)));
             }
 
-            foreach (var garbage in Files.Where(x => x.Name == "code.min1ab2.js").ToList())
+            foreach (var garbage in Files.Where(x => garbageList.Contains(x.Name)).ToList())
             {
                 garbage.Delete();
             }
@@ -41,6 +51,7 @@ namespace LightNovelHelper
             var big5 = ChineseConverter.Convert(str, ChineseConversionDirection.SimplifiedToTraditional);
 
             var result = big5.Replace("'/novel", "'../../novel")
+                             .Replace("/catalog", "/catalog.html")
                              .Replace("嗶哩輕小說", "");
 
             await File.WriteAllTextAsync(fi.FullName, result);
