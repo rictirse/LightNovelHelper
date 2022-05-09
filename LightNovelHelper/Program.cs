@@ -165,6 +165,7 @@ namespace LightNovelHelper
                     if (script != null)
                     {
                         var findScript = script.Where(x => x.OuterHtml.Contains("hma361.js"))
+                            .Union(script.Where(x => x.OuterHtml.Contains("https://tw.linovelib.com")))
                             .Union(script.Where(x => x.OuterHtml.Contains("baidu"))).ToList();
 
                         foreach (var s in findScript)
