@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="js\readtoolsffc1.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="js\readtoolsffc1.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ChineseConverter" Version="1.0.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace LightNovelHelper
@@ -44,9 +45,15 @@ namespace LightNovelHelper
             taskList.Clear();
             Console.WriteLine($"{DateTime.Now} Init done.");
 
-            foreach (var fi in Files.Where(x => x.Extension == ".html").ToList())
+            var fiList = Files.Where(x => x.Extension == ".html").ToList();
+            foreach (var fi in fiList)
             {
                 taskList.Add(Task.Run(async () => await ReadHtml(fi)));
+            }
+
+            foreach (var readToolsJs in Files.Where(x => x.Name == "readtoolsffc1.js").ToList())
+            {
+                File.WriteAllBytes(readToolsJs.FullName, "readtoolsffc1.js".ResourceToByteArray());
             }
 
             foreach (var garbage in Files.Where(x => GarbageList.Contains(x.Name)).ToList())
@@ -103,6 +110,7 @@ namespace LightNovelHelper
             await File.WriteAllTextAsync(fi.FullName, result);
         }
 
+        #region Html
         static void HtmlProcedure(string htmlPath)
         {
             var doc = new HtmlDocument();
@@ -149,7 +157,6 @@ namespace LightNovelHelper
                 }
             }
 
-
             void RemoveReadPage()
             { 
                 try
@@ -185,6 +192,7 @@ namespace LightNovelHelper
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// 讀檔案
@@ -222,6 +230,7 @@ namespace LightNovelHelper
                                 subDirectory.Delete(true);
                             }
                             di.Delete(true);
+                            continue;
                         }
                     }
                     catch { }
@@ -243,6 +252,25 @@ namespace LightNovelHelper
 
     static class NovelExtensions
     {
+        /// <summary>
+        /// Embedded resource轉byte
+        /// </summary>
+        public static byte[] ResourceToByteArray(this string fileName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                                       .Where(str => str.Contains(fileName))
+                                       .FirstOrDefault();
+            if (string.IsNullOrEmpty(resourceName)) return null;
+
+            using (var s = assembly.GetManifestResourceStream(resourceName))
+            using (var ms = new MemoryStream())
+            {
+                s.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
         /// <summary>
         /// 讀Csv格式
         /// </summary>
